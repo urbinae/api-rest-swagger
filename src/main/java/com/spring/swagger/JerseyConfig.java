@@ -1,4 +1,4 @@
-package com.interfell.apidoc;
+package com.spring.swagger;
 
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.config.SwaggerConfigLocator;

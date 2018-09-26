@@ -1,19 +1,18 @@
-package com.interfell.apidoc.models;
+package com.spring.swagger.models;
 
-//import javax.persistence.Id;
-//import javax.persistence.Table;
-
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import io.swagger.annotations.ApiModelProperty;
 
-//@EntityScan
-//@Table
+@Entity
+@Table
 public class User{
 
 	private static final long serialVersionUID = 1L;
 	
-	//@Id
+	@Id
 	@ApiModelProperty(notes = "Email del usuario")
 	private String email;
 	
@@ -21,8 +20,6 @@ public class User{
 	private String password;
 	
 	public User() {
-		// TODO Auto-generated method stub
-
 	}
 	
 	public User(String email, String password) {
@@ -40,7 +37,6 @@ public class User{
 	}
 
 	public String getPassword() {
-		// TODO Auto-generated method stub
 		return this.password;
 	}
 

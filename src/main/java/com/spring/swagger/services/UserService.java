@@ -1,4 +1,4 @@
-package com.interfell.apidoc.services;
+package com.spring.swagger.services;
 
 import java.util.List;
 
@@ -15,9 +15,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.interfell.apidoc.models.User;
-import com.interfell.apidoc.repository.UserListRepository;
-import com.interfell.apidoc.repository.UserRepository;
+import com.spring.swagger.models.User;
+import com.spring.swagger.repository.UserRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,33 +34,15 @@ import io.swagger.annotations.ApiResponse;
  * relativa a un usuario (id).
  */
  
-@Path("/user")
+@Path("/users")
 @Api(
     value = "API-REST PARA USUARIOS", produces = MediaType.APPLICATION_JSON,
     description = "Recursos de usuario."
 )
 public class UserService {
 	
-	/*@Autowired
-	private UserRepository userRepository;*/
-	
-	//@Autowired
-	
-	
-	private UserListRepository userRepository;
-	
-	 public UserService() {
-			this.userRepository = new UserListRepository();
-		}
-	 
-	public UserListRepository getUserRepository() {
-		return userRepository;
-	}
-
-	public void setUserRepository(UserListRepository userRepository) {
-		this.userRepository = userRepository;
-	}
-	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@POST
     @Path("/login")
@@ -81,7 +62,7 @@ public class UserService {
         }
     )
 	public Response loginUser(User user){
-		user = userRepository.getById(user.getEmail());
+		user = userRepository.getOne(user.getEmail());
 		if (user != null) {
 			return Response.ok(User.class).build();
 		}else 
@@ -107,8 +88,7 @@ public class UserService {
             @ApiResponse(code = 500, message = "Error interno del servidor")
     })
     public List<User> findAll() {
-		//List<User> userList = userRepository.findAll();
-		List<User> userList = userRepository.getAll();
+		List<User> userList = userRepository.findAll();
 		return userList;
     }
  
@@ -127,8 +107,7 @@ public class UserService {
     public Response findById(
             @ApiParam(value = "Email del usuario a buscar", required = true)
             @PathParam("email") String email) {
-    	//User user = userRepository.getOne(email);
-    	User user = userRepository.getById(email);
+    	User user = userRepository.getOne(email);
     	if (user != null) {
     		return Response.ok(user).build();
 		} else {
@@ -149,7 +128,8 @@ public class UserService {
             @ApiResponse(code = 401, message = "No estas autorizado para ver este producto"),
             @ApiResponse(code = 403, message = "Se prohíbe acceder al recurso al que intentabas llegar"),
             @ApiResponse(code = 404, message = "El recurso que intentabas alcanzar no se encuentra"),
-            @ApiResponse(code = 500, message = "Error del servidor")
+            @ApiResponse(code = 500, message = "Error del servidor"),
+            @ApiResponse(code = 400, message = "El usuario ya existe")
     })
     public Response addUser(
             @ApiParam(value = "Datos del nuevo usuario", required = true)
@@ -158,8 +138,11 @@ public class UserService {
 		if (!band) {
 			newUser = userRepository.save(newUser);
 			return Response.ok(newUser).build();
-		}else 
-			return Response.status(Status.BAD_REQUEST).entity(User.class).build();
+		}else {
+			Response resp = Response.status(Status.BAD_REQUEST).entity(newUser).build();
+			return resp;
+		}
+		
     }
  
    
@@ -168,7 +151,7 @@ public class UserService {
     @Path("/update/{email}")
     @Consumes({MediaType.APPLICATION_JSON})
     @ApiOperation(
-            value = "Actualiza los datos de un usuario",
+            value = "Actualiza los datos de un uginsuario",
             notes = "Actualiza los datos del usuario que se corresponda con el email. El usuario debe existir"
     )
     public Response updateUser(@PathParam("id") int id,
@@ -187,7 +170,7 @@ public class UserService {
     public Response removeUser(
             @ApiParam(value = "ID del usuario a eliminar", allowableValues = "range[1," + Integer.MAX_VALUE + "]", required = true)
             @PathParam("email") String email) {
-        userRepository.delete(email);  
+        userRepository.deleteById(email);  
         return Response.noContent().build();
     }
 	
