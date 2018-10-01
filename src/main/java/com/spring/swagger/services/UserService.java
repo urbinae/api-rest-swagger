@@ -87,9 +87,15 @@ public class UserService {
             @ApiResponse(code = 404, message = "El recurso que intentabas alcanzar no se encuentra"),
             @ApiResponse(code = 500, message = "Error interno del servidor")
     })
-    public List<User> findAll() {
+    public Response findAll() {
 		List<User> userList = userRepository.findAll();
-		return userList;
+		Response resp = Response
+				.ok(userList)
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+				.allow("OPTIONS")
+				.build();
+		return resp;
     }
  
     @GET
@@ -137,7 +143,12 @@ public class UserService {
     	Boolean band = userRepository.existsById(newUser.getEmail());
 		if (!band) {
 			newUser = userRepository.save(newUser);
-			return Response.ok(newUser).build();
+			return Response
+					.ok(newUser)
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+					.allow("OPTIONS")
+					.build();
 		}else {
 			Response resp = Response.status(Status.BAD_REQUEST).entity(newUser).build();
 			return resp;
